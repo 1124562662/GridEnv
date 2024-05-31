@@ -1,0 +1,25 @@
+The IEEE 4-bus, 34-bus and 123-bus distribution test feeders [46] are used in the numerical simulations.
+ In the 4-bus feeder, a voltage regulator is located at node 1 and an on-load tap changer connects node 2 and 3.
+ We add a capacitor bank with 200 kVar rating to node 4.
+ In the 34-bus test feeder, a voltage regulator is at node 800.
+ There are two transformers connecting node 814 to node 850 and node 852 to node 832 respectively.
+ Two capacitors are placed at node 844 (100 kVar) and node 847 (150 kVar).
+ In the 123-bus test feeder, a voltage regulator is at node 150.
+ There are three on-load tap changers, which connect node 10 to node 15, node 160 to node 67, and node 25 to node 26 respectively.
+ Four capacitors are placed at node 83 (200 kVar), node 88 (50 kVar), node 90 (50 kVar), and node 92 (50 kVar).
+ All voltage regulators and on-load tap changers have 11 tap positions, which correspond to turns ratios ranging from 0.95 to 1.05.
+  The capacitors can be switched on/off remotely and the number of ‘tap positions’ is treated as 2.
+
+In the initial state, the turns ratios of voltage regulators and on-load tap changers are 1 and the capacitors are switched off.
+The electricity price Ce is assumed to be $40/MWh . The operating cost per tap change CTj is set to be $0.1 for all devices.
+One year of hourly smart meter energy consumption data [47] from London is used.
+The aggregated load data is scaled and allocated to each node according to the existing spatial load distribution of the
+IEEE standard test cases.
+10 weeks of randomly selected data are used for out-of-sample testing.
+The rest of the data are used for training purposes.
+For DRL approaches, the reward and the cost are derived based on the line losses and nodal voltages calculated
+from the power flow simulations.
+For the three IEEE distribution test feeders, when the nodal voltages are within appropriate bounds, the line flow limits
+ are also satisfied. Thus, only the voltage constraints are explicitly stated in the problem formulation. The upper limit
+  for the number of voltage violations Vc¯¯¯¯¯¯ is set as 0.
+The parameter settings for the reinforcement learning algorithms are provided in Table I below.
