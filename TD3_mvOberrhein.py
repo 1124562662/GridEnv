@@ -175,7 +175,7 @@ def diversification(ensemble: nn.Module,
                     target: torch.Tensor,  # (B,) or (B,A)
                     loss_fn,
                     optimizer: torch.optim.Optimizer,
-                    alpha: float = 0.1,
+                    alpha: float = 0.5,
                     regularizer: str = 'GAL',
                     ADP_alpha: float = 0.1,
                     ADP_beta: float = 0.1,
@@ -199,23 +199,20 @@ def diversification(ensemble: nn.Module,
             state.requires_grad = True
             actions.requires_grad = True
             yi = model(x=state, a=actions)
-            loss_i = loss_fn(yi.view(-1), target.view(-1))
-            loss_i /= len(ensemble.ensembles)
+            loss_i = loss_fn(yi.view(-1), target.view(-1))/B
             grad1 = torch.autograd.grad([loss_i], [state, actions], create_graph=True)
-            loss += loss_i/len(ensemble.ensembles)
-            # for qqq, jjj in enumerate(model.parameters()):
-            #     print("1111111--", id, ",", qqq, jjj.grad.mean())
-            print(grad1[0].shape, grad1[1].shape)
+            loss += loss_i
             x_grads[id] = torch.cat(grad1, dim=1).to(device)  # (B,S+A)
         x_grads = x_grads.reshape((E, B, -1))
         x_grads = torch.nn.functional.normalize(x_grads, dim=2, p=2.0)  # (E,B,X)
-        cosine_similarity = torch.einsum("ibj,kbj->", x_grads, x_grads)
-        loss += alpha * cosine_similarity / (E * E * B * 2)#TODO determine divident
+        cosine_similarity = torch.einsum("ibj,kbj->", x_grads, x_grads) / (E * 2)
+        print("lfdsafsda",loss,  cosine_similarity)
+        loss += alpha * cosine_similarity
         #TODO grad 的数值太大
         loss.backward()
-        for id, model in enumerate(ensemble.ensembles):
-            for qqq, jjj in enumerate(model.parameters()):
-                print("22222222--", id, ",", qqq, jjj.grad.mean())
+        # for id, model in enumerate(ensemble.ensembles):
+        #     for qqq, jjj in enumerate(model.parameters()):
+        #         print("22222222--", id, ",", qqq, jjj.grad.mean())
         optimizer.step()
 
     elif regularizer == 'DVERGE':
